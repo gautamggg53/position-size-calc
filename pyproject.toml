@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "position-size-calc"
+version = "0.1.0"
+description = "Dependency-free risk-based position sizing for forex, CFDs, futures, stocks and crypto, rounded down to the lot step, with a prop-firm daily-loss/drawdown cap."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Gautam Goyal" }]
+requires-python = ">=3.10"
+keywords = ["trading", "position size", "risk management", "forex", "futures", "prop firm", "lot size"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = []
+
+[project.optional-dependencies]
+yaml = ["pyyaml>=6.0"]
+dev = ["pytest>=7", "pytest-cov>=4", "hypothesis>=6", "ruff>=0.5", "build>=1.0", "pyyaml>=6.0"]
+
+[project.scripts]
+psize = "position_size_calc.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/gautamggg53/position-size-calc"
+Issues = "https://github.com/gautamggg53/position-size-calc/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/position_size_calc"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "examples", "README.md", "LICENSE", "CHANGELOG.md", "CONTRIBUTING.md", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+source = ["position_size_calc"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]

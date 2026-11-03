@@ -1,0 +1,29 @@
+name: Bug report
+description: A size, risk or conversion is wrong, or the CLI crashes.
+labels: [bug]
+body:
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: The exact command (or library call) and its full output.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result and how you worked it out
+      description: Show the arithmetic, e.g. "50 pips x 10 USD/pip = 500 USD per lot".
+    validations:
+      required: true
+  - type: textarea
+    id: spec
+    attributes:
+      label: Instrument spec
+      description: The preset or flags used, and your broker's contract spec for it (contract size, tick size/value, lot step).
+  - type: input
+    id: version
+    attributes:
+      label: Version and platform
+      placeholder: "psize 0.1.0, Python 3.12, macOS"

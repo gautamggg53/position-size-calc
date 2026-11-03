@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest an option, instrument type or output.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What do you need to size or check?
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: A worked example
+      description: Inputs and the result you expect, with the arithmetic, so it can become a test.

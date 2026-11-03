@@ -1,0 +1,29 @@
+{
+  "_comment": "EXAMPLE instrument specs only. Contract sizes, tick values, lot steps and limits differ between brokers and account types and can change. Check every value against your broker's or exchange's contract specification before use. Copy this file, edit it and pass it with --presets.",
+  "instruments": {
+    "EURUSD": {"kind": "forex", "base_currency": "EUR", "quote_currency": "USD", "contract_size": 100000, "pip_size": 0.0001, "tick_size": 0.00001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100, "description": "Example: standard forex lot of 100,000 EUR"},
+    "GBPUSD": {"kind": "forex", "base_currency": "GBP", "quote_currency": "USD", "contract_size": 100000, "pip_size": 0.0001, "tick_size": 0.00001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "AUDUSD": {"kind": "forex", "base_currency": "AUD", "quote_currency": "USD", "contract_size": 100000, "pip_size": 0.0001, "tick_size": 0.00001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "USDCHF": {"kind": "forex", "base_currency": "USD", "quote_currency": "CHF", "contract_size": 100000, "pip_size": 0.0001, "tick_size": 0.00001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "USDCAD": {"kind": "forex", "base_currency": "USD", "quote_currency": "CAD", "contract_size": 100000, "pip_size": 0.0001, "tick_size": 0.00001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "USDJPY": {"kind": "forex", "base_currency": "USD", "quote_currency": "JPY", "contract_size": 100000, "pip_size": 0.01, "tick_size": 0.001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "EURJPY": {"kind": "forex", "base_currency": "EUR", "quote_currency": "JPY", "contract_size": 100000, "pip_size": 0.01, "tick_size": 0.001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "GBPJPY": {"kind": "forex", "base_currency": "GBP", "quote_currency": "JPY", "contract_size": 100000, "pip_size": 0.01, "tick_size": 0.001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "EURGBP": {"kind": "forex", "base_currency": "EUR", "quote_currency": "GBP", "contract_size": 100000, "pip_size": 0.0001, "tick_size": 0.00001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 100},
+    "XAUUSD": {"kind": "cfd", "quote_currency": "USD", "contract_size": 100, "tick_size": 0.01, "point_size": 0.01, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 50, "description": "Example: gold CFD, 100 oz per lot (some brokers differ)"},
+    "XAGUSD": {"kind": "cfd", "quote_currency": "USD", "contract_size": 5000, "tick_size": 0.001, "point_size": 0.001, "lot_step": 0.01, "min_lot": 0.01, "max_lot": 50, "description": "Example: silver CFD, 5,000 oz per lot (some brokers differ)"},
+    "US500": {"kind": "cfd", "quote_currency": "USD", "contract_size": 1, "tick_size": 0.01, "point_size": 1, "lot_step": 0.1, "min_lot": 0.1, "max_lot": 500, "description": "Example: S&P 500 index CFD, 1 USD per point per lot (varies widely by broker)"},
+    "US30": {"kind": "cfd", "quote_currency": "USD", "contract_size": 1, "tick_size": 0.01, "point_size": 1, "lot_step": 0.1, "min_lot": 0.1, "max_lot": 500, "description": "Example: Dow index CFD, 1 USD per point per lot (varies widely by broker)"},
+    "GER40": {"kind": "cfd", "quote_currency": "EUR", "contract_size": 1, "tick_size": 0.01, "point_size": 1, "lot_step": 0.1, "min_lot": 0.1, "max_lot": 500, "description": "Example: DAX index CFD, 1 EUR per point per lot (varies widely by broker)"},
+    "ES": {"kind": "futures", "quote_currency": "USD", "tick_size": 0.25, "tick_value": 12.5, "point_size": 1, "lot_step": 1, "min_lot": 1, "description": "Example: E-mini S&P 500, 0.25 tick = 12.50 USD"},
+    "MES": {"kind": "futures", "quote_currency": "USD", "tick_size": 0.25, "tick_value": 1.25, "point_size": 1, "lot_step": 1, "min_lot": 1, "description": "Example: Micro E-mini S&P 500, 0.25 tick = 1.25 USD"},
+    "NQ": {"kind": "futures", "quote_currency": "USD", "tick_size": 0.25, "tick_value": 5.0, "point_size": 1, "lot_step": 1, "min_lot": 1, "description": "Example: E-mini Nasdaq-100, 0.25 tick = 5.00 USD"},
+    "MNQ": {"kind": "futures", "quote_currency": "USD", "tick_size": 0.25, "tick_value": 0.5, "point_size": 1, "lot_step": 1, "min_lot": 1, "description": "Example: Micro E-mini Nasdaq-100, 0.25 tick = 0.50 USD"},
+    "CL": {"kind": "futures", "quote_currency": "USD", "tick_size": 0.01, "tick_value": 10.0, "lot_step": 1, "min_lot": 1, "description": "Example: WTI crude oil, 0.01 tick = 10.00 USD"},
+    "GC": {"kind": "futures", "quote_currency": "USD", "tick_size": 0.1, "tick_value": 10.0, "lot_step": 1, "min_lot": 1, "description": "Example: gold futures, 0.10 tick = 10.00 USD"},
+    "STOCK-USD": {"kind": "stock", "quote_currency": "USD", "contract_size": 1, "tick_size": 0.01, "lot_step": 1, "min_lot": 1, "description": "Example: whole shares of a USD-listed stock"},
+    "STOCK-USD-FRACTIONAL": {"kind": "stock", "quote_currency": "USD", "contract_size": 1, "tick_size": 0.01, "lot_step": 0.001, "min_lot": 0.001, "description": "Example: fractional shares (step 0.001)"},
+    "BTCUSD": {"kind": "crypto", "quote_currency": "USD", "contract_size": 1, "tick_size": 0.01, "lot_step": 0.00001, "min_lot": 0.00001, "description": "Example: spot BTC in coin units, step 0.00001"},
+    "ETHUSD": {"kind": "crypto", "quote_currency": "USD", "contract_size": 1, "tick_size": 0.01, "lot_step": 0.0001, "min_lot": 0.0001, "description": "Example: spot ETH in coin units, step 0.0001"}
+  }
+}

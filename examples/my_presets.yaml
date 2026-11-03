@@ -1,0 +1,21 @@
+# Example of a personal preset file (YAML needs: pip install "position-size-calc[yaml]").
+# Values below are EXAMPLES. Copy your broker's contract specification.
+instruments:
+  NAS100:
+    kind: cfd
+    quote_currency: USD
+    contract_size: 1        # 1 USD per index point per lot at this (example) broker
+    tick_size: 0.01
+    point_size: 1
+    lot_step: 0.01
+    min_lot: 0.01
+    max_lot: 100
+    description: "Example only: Nasdaq-100 CFD"
+  MGC:
+    kind: futures
+    quote_currency: USD
+    tick_size: 0.1
+    tick_value: 1.0         # Micro Gold: 0.10 tick = 1.00 USD (check the exchange spec)
+    lot_step: 1
+    min_lot: 1
+    description: "Example only: Micro Gold futures"

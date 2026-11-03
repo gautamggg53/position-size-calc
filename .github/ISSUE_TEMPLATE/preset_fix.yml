@@ -1,0 +1,23 @@
+name: Preset correction or addition
+description: An example preset is wrong or missing.
+labels: [presets]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Presets are examples, and brokers differ. Please link a public contract-spec page
+        (exchange or broker) for the values you propose.
+  - type: input
+    id: instrument
+    attributes:
+      label: Instrument
+      placeholder: "e.g. NAS100 CFD, or CME MGC"
+    validations:
+      required: true
+  - type: textarea
+    id: values
+    attributes:
+      label: Proposed values and source link
+      render: text
+    validations:
+      required: true
