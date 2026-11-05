@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import asdict, dataclass, fields, replace
 from importlib import resources
 from pathlib import Path
@@ -49,6 +50,19 @@ class InstrumentSpec:
             raise SpecError(
                 f"{self.name}: kind must be one of {', '.join(KINDS)}, not {self.kind!r}"
             )
+        for f in (
+            "contract_size",
+            "tick_size",
+            "tick_value",
+            "pip_size",
+            "point_size",
+            "lot_step",
+            "min_lot",
+            "max_lot",
+        ):
+            v = getattr(self, f)
+            if v is not None and not math.isfinite(v):
+                raise SpecError(f"{self.name}: {f} must be a finite number, got {v!r}")
         for f in ("contract_size", "tick_size", "lot_step"):
             if not getattr(self, f) > 0:
                 raise SpecError(f"{self.name}: {f} must be positive")

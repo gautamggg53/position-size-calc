@@ -80,6 +80,13 @@ def _largest_size_within(cap: float, loss_per_lot: float, step: float) -> float:
     return float(n * d_step)
 
 
+def _require_finite(**values: float | None) -> None:
+    """Reject NaN and infinity, which would otherwise crash or silently skip a limit."""
+    for name, value in values.items():
+        if value is not None and not math.isfinite(value):
+            raise SizingError(f"{name} must be a finite number, got {value!r}")
+
+
 def floor_to_step(value: float, step: float) -> float:
     """Round ``value`` down to a multiple of ``step``, returned without float drift."""
     if value <= 0:
@@ -97,6 +104,7 @@ def parse_rate(pair: str, rate: float, quote: str, account: str) -> float:
     """
     p = pair.strip().upper().replace("/", "")
     q, a = quote.upper(), account.upper()
+    _require_finite(rate=rate)
     if not rate > 0:
         raise SizingError("conversion rate must be positive")
     if p == a + q:
@@ -107,6 +115,7 @@ def parse_rate(pair: str, rate: float, quote: str, account: str) -> float:
 
 
 def stop_from_distance(entry: float, side: str, *, price_distance: float) -> float:
+    _require_finite(entry=entry, stop_distance=price_distance)
     if not price_distance > 0:
         raise SizingError("stop distance must be positive")
     return entry - price_distance if side == "long" else entry + price_distance
@@ -136,6 +145,22 @@ def calculate(
     """
     notes: list[str] = []
     account = account_currency.upper()
+    _require_finite(
+        balance=balance,
+        entry=entry,
+        stop=stop,
+        risk_pct=risk_pct,
+        risk_amount=risk_amount,
+        quote_to_account=quote_to_account,
+        commission_per_lot=commission_per_lot,
+        target=target,
+    )
+    if prop is not None:
+        _require_finite(
+            daily_loss_left=prop.daily_loss_left,
+            max_drawdown_left=prop.max_drawdown_left,
+            open_risk=prop.open_risk,
+        )
     if not balance > 0:
         raise SizingError("balance must be positive")
     if not entry > 0 or not stop > 0:

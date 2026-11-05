@@ -261,6 +261,8 @@ def test_stop_from_distance():
     assert stop_from_distance(1.1, "short", price_distance=0.002) == pytest.approx(1.102)
     with pytest.raises(SizingError):
         stop_from_distance(1.1, "long", price_distance=0)
+    with pytest.raises(SizingError, match="finite"):
+        stop_from_distance(1.1, "long", price_distance=float("inf"))
 
 
 @pytest.mark.parametrize(
@@ -277,6 +279,17 @@ def test_stop_from_distance():
         ({"target": -1}, "positive price"),
         ({"quote_to_account": 0}, "quote_to_account"),
         ({"prop": PropLimits(open_risk=-1)}, "open_risk"),
+        ({"balance": float("inf")}, "balance must be a finite"),
+        ({"risk_pct": None, "risk_amount": float("inf")}, "risk_amount must be a finite"),
+        ({"entry": float("inf")}, "entry must be a finite"),
+        ({"stop": float("nan")}, "stop must be a finite"),
+        ({"commission_per_lot": float("nan")}, "commission_per_lot must be a finite"),
+        ({"target": float("inf")}, "target must be a finite"),
+        ({"quote_to_account": float("inf")}, "quote_to_account must be a finite"),
+        # A NaN limit must not be silently ignored by min(): that would size past it.
+        ({"prop": PropLimits(daily_loss_left=float("nan"))}, "daily_loss_left"),
+        ({"prop": PropLimits(max_drawdown_left=float("inf"))}, "max_drawdown_left"),
+        ({"prop": PropLimits(max_drawdown_left=500, open_risk=float("nan"))}, "open_risk"),
     ],
 )
 def test_input_validation(kwargs, match):
@@ -290,6 +303,10 @@ def test_parse_rate_errors():
         parse_rate("EURUSD", 1.1, "JPY", "USD")
     with pytest.raises(SizingError, match="positive"):
         parse_rate("USDJPY", 0, "JPY", "USD")
+    with pytest.raises(SizingError, match="finite"):
+        parse_rate("USDJPY", float("inf"), "JPY", "USD")
+    with pytest.raises(SizingError, match="finite"):
+        parse_rate("USDJPY", float("nan"), "JPY", "USD")
     assert parse_rate("jpy/usd", 0.0066, "JPY", "USD") == 0.0066
 
 
@@ -308,3 +325,9 @@ def test_huge_size_with_tiny_step_terminates():
     r = calculate(spec, balance=10_000_000, risk_pct=10, entry=0.01, stop=0.0099)
     assert r.size == pytest.approx(1e10, rel=2e-9)  # within the documented 1e-9 tolerance
     assert r.actual_risk <= 1_000_000 * (1 + 1e-9)
+
+
+@pytest.mark.parametrize("field", ["tick_value", "tick_size", "contract_size", "max_lot"])
+def test_spec_rejects_non_finite(field):
+    with pytest.raises(ValueError, match=f"{field} must be a finite"):
+        InstrumentSpec(name="X", kind="cfd", quote_currency="USD", **{field: float("inf")})

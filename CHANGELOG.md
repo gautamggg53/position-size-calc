@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Reject NaN and infinite inputs (balance, risk, prices, commission, rate, prop
+  limits and instrument spec fields) with a clear error. Previously `inf` or
+  `nan` crashed the CLI with a traceback, and a NaN daily-loss or drawdown
+  limit was silently ignored, so the size was not capped by it.
+
 ## [0.1.0] - 2026-11-03
 
 ### Added

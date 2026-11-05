@@ -268,6 +268,20 @@ def test_cli_exit_codes(capsys):
     assert rc == 2 and "pips are only defined for forex" in err
 
 
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--balance", "inf", "--risk", "1"],
+        ["--balance", "10000", "--risk-amount", "inf"],
+        ["--balance", "10000", "--risk", "1", "--commission-per-lot", "nan"],
+        ["--balance", "10000", "--risk", "1", "--daily-loss-left", "nan"],
+    ],
+)
+def test_cli_rejects_non_finite_numbers(capsys, extra):
+    rc, out, err = run(capsys, "EURUSD", "--entry", "1.085", "--stop", "1.08", *extra)
+    assert rc == 2 and "must be a finite number" in err and out == ""
+
+
 def test_cli_missing_args():
     with pytest.raises(SystemExit):
         main(["EURUSD", "--balance", "1000"])
