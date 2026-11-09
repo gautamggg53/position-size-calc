@@ -219,6 +219,11 @@ def main(argv: list[str] | None = None) -> int:
                 raise SizingError(f"--rate must look like USDJPY=150.2, got {args.rate!r}") from exc
             conv = parse_rate(pair, rate, spec.quote_currency, account)
         prop = None
+        if args.open_risk and args.daily_loss_left is None and args.max_dd_left is None:
+            raise SizingError(
+                "--open-risk only reduces the prop limits; add --daily-loss-left and/or "
+                "--max-dd-left, or lower --risk/--risk-amount yourself"
+            )
         if args.daily_loss_left is not None or args.max_dd_left is not None:
             prop = PropLimits(args.daily_loss_left, args.max_dd_left, args.open_risk)
         res = calculate(

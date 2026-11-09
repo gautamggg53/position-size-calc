@@ -12,6 +12,13 @@ All notable changes to this project are documented here. The format follows
   limits and instrument spec fields) with a clear error. Previously `inf` or
   `nan` crashed the CLI with a traceback, and a NaN daily-loss or drawdown
   limit was silently ignored, so the size was not capped by it.
+- Preset files: numbers written as text are accepted, so a YAML value like
+  `tick_size: 1e-5` (which PyYAML reads as a string) now works instead of
+  failing with an unnamed "must be real number, not str" error. Booleans and
+  other non-numbers in numeric fields are rejected with the field's name;
+  previously `lot_step: true` was taken as 1 and later crashed with a traceback.
+- `--open-risk` without `--daily-loss-left` or `--max-dd-left` is now an error.
+  It was silently ignored, so the size did not account for the open risk.
 
 ## [0.1.0] - 2026-11-03
 

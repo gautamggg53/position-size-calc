@@ -23,6 +23,20 @@ class SpecError(ValueError):
     """An instrument spec or preset file is invalid."""
 
 
+_NUMERIC_FIELDS = (
+    "contract_size",
+    "tick_size",
+    "tick_value",
+    "pip_size",
+    "point_size",
+    "lot_step",
+    "min_lot",
+    "max_lot",
+)
+_REQUIRED_NUMBERS = ("contract_size", "tick_size", "lot_step", "min_lot")
+_TEXT_FIELDS = ("name", "kind", "quote_currency", "base_currency", "description")
+
+
 @dataclass(frozen=True)
 class InstrumentSpec:
     """How price moves turn into money for one instrument.
@@ -50,17 +64,16 @@ class InstrumentSpec:
             raise SpecError(
                 f"{self.name}: kind must be one of {', '.join(KINDS)}, not {self.kind!r}"
             )
-        for f in (
-            "contract_size",
-            "tick_size",
-            "tick_value",
-            "pip_size",
-            "point_size",
-            "lot_step",
-            "min_lot",
-            "max_lot",
-        ):
+        for f in _TEXT_FIELDS:
             v = getattr(self, f)
+            if v is not None and not isinstance(v, str):
+                raise SpecError(f"{self.name}: {f} must be text, got {v!r}")
+        for f in _NUMERIC_FIELDS:
+            v = getattr(self, f)
+            if v is None and f in _REQUIRED_NUMBERS:
+                raise SpecError(f"{self.name}: {f} must be a number, got None")
+            if v is not None and (isinstance(v, bool) or not isinstance(v, (int, float))):
+                raise SpecError(f"{self.name}: {f} must be a number, got {v!r}")
             if v is not None and not math.isfinite(v):
                 raise SpecError(f"{self.name}: {f} must be a finite number, got {v!r}")
         for f in ("contract_size", "tick_size", "lot_step"):
@@ -114,14 +127,29 @@ class InstrumentSpec:
 _FIELDS = {f.name for f in fields(InstrumentSpec)}
 
 
+def _coerce_number(name: str, field: str, value: Any) -> Any:
+    """Accept numbers written as text, e.g. ``1e-5``, which PyYAML loads as a string."""
+    if isinstance(value, str):
+        try:
+            return float(value.strip())
+        except ValueError:
+            raise SpecError(f"{name}: {field} must be a number, got {value!r}") from None
+    return value
+
+
 def spec_from_dict(name: str, data: dict[str, Any]) -> InstrumentSpec:
     unknown = set(data) - _FIELDS
     if unknown:
         raise SpecError(f"{name}: unknown field(s) {', '.join(sorted(unknown))}")
     if "kind" not in data or "quote_currency" not in data:
         raise SpecError(f"{name}: 'kind' and 'quote_currency' are required")
+    values = {
+        k: _coerce_number(name, k, v) if k in _NUMERIC_FIELDS else v
+        for k, v in data.items()
+        if k != "name"
+    }
     try:
-        return InstrumentSpec(name=name, **{k: v for k, v in data.items() if k != "name"})
+        return InstrumentSpec(name=name, **values)
     except TypeError as exc:
         raise SpecError(f"{name}: {exc}") from exc
 

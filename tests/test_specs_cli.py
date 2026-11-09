@@ -33,11 +33,34 @@ def test_jpy_pip_default_without_explicit_pip_size():
         ({"kind": "cfd", "quote_currency": "USD", "min_lot": 5, "max_lot": 1}, "max_lot"),
         ({"kind": "cfd", "quote_currency": "US"}, "3-letter"),
         ({"kind": "cfd", "quote_currency": "USD", "colour": "red"}, "unknown field"),
+        ({"kind": "cfd", "quote_currency": "USD", "lot_step": True}, "lot_step must be a num"),
+        ({"kind": "cfd", "quote_currency": "USD", "tick_size": "abc"}, "tick_size must be a num"),
+        ({"kind": "cfd", "quote_currency": "USD", "tick_size": None}, "tick_size must be a num"),
+        ({"kind": "cfd", "quote_currency": 840}, "quote_currency must be text"),
     ],
 )
 def test_spec_validation(data, match):
     with pytest.raises(SpecError, match=match):
         spec_from_dict("X", data)
+
+
+def test_numbers_written_as_text_are_accepted():
+    # PyYAML reads ``1e-5`` (no decimal point) as the string "1e-5".
+    s = spec_from_dict(
+        "X", {"kind": "forex", "quote_currency": "USD", "tick_size": "1e-5", "lot_step": " 0.01 "}
+    )
+    assert s.tick_size == 1e-5 and s.lot_step == 0.01
+
+
+def test_yaml_exponent_without_decimal_point(tmp_path):
+    pytest.importorskip("yaml")
+    y = tmp_path / "p.yaml"
+    y.write_text(
+        "instruments:\n  FOO:\n    kind: forex\n    quote_currency: USD\n"
+        "    contract_size: 100000\n    tick_size: 1e-5\n",
+        encoding="utf-8",
+    )
+    assert load_presets(y)["FOO"].tick_size == 1e-5
 
 
 def test_custom_preset_files(tmp_path):
@@ -280,6 +303,14 @@ def test_cli_exit_codes(capsys):
 def test_cli_rejects_non_finite_numbers(capsys, extra):
     rc, out, err = run(capsys, "EURUSD", "--entry", "1.085", "--stop", "1.08", *extra)
     assert rc == 2 and "must be a finite number" in err and out == ""
+
+
+def test_cli_open_risk_needs_a_prop_limit(capsys):
+    args = ["EURUSD", "--balance", "10000", "--risk", "1", "--entry", "1.1", "--stop", "1.09"]
+    rc, _, err = run(capsys, *args, "--open-risk", "500")
+    assert rc == 2 and "--open-risk only reduces the prop limits" in err
+    rc, out, _ = run(capsys, *args, "--open-risk", "10", "--daily-loss-left", "60")
+    assert rc == 0 and "binding: daily_loss" in out and "0.05 lots" in out
 
 
 def test_cli_missing_args():
