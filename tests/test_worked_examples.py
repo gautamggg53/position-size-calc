@@ -202,6 +202,21 @@ def test_reward_is_net_of_commission():
     # loss per contract 205 -> 500/205 = 2.43 -> 2
     assert r.size == 2
     assert r.reward == pytest.approx(790)
+    # Risk 2 * 205 = 410, so the money ratio is 790 / 410, below the price ratio of 2.
+    assert r.reward_to_risk == pytest.approx(2.0)
+    assert r.net_reward_to_risk == pytest.approx(790 / 410)
+
+
+def test_net_reward_to_risk_equals_price_ratio_without_commission():
+    r = calculate(P["EURUSD"], balance=10_000, risk_pct=1, entry=1.0850, stop=1.0800, target=1.0950)
+    assert r.net_reward_to_risk == pytest.approx(r.reward_to_risk)
+
+
+def test_net_reward_to_risk_is_none_when_size_is_zero():
+    # 1 contract of ES with a 4-point stop risks 200; a 100 budget gives size 0.
+    r = calculate(P["ES"], balance=50_000, risk_amount=100, entry=5000, stop=4996, target=5008)
+    assert r.size == 0
+    assert r.net_reward_to_risk is None
 
 
 def test_prop_daily_loss_binds():

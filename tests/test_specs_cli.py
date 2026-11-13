@@ -121,6 +121,30 @@ def test_cli_basic(capsys):
     assert rc == 0
     assert "POSITION SIZE       0.2 lots (20000 units)" in out
     assert "R:R 2.00" in out
+    assert "after commission" not in out
+
+
+def test_cli_shows_rr_after_commission(capsys):
+    # ES, 4-point stop, 8-point target, 5 commission: 2 contracts, reward 790,
+    # risk 410 -> 1.93 after commission.
+    rc, out, _ = run(
+        capsys,
+        "ES",
+        "--balance",
+        "50000",
+        "--risk-amount",
+        "500",
+        "--entry",
+        "5000",
+        "--stop",
+        "4996",
+        "--target",
+        "5008",
+        "--commission-per-lot",
+        "5",
+    )
+    assert rc == 0
+    assert "reward 790.00 USD, R:R 2.00 (1.93 after commission)" in out
 
 
 def test_cli_pips_and_rate(capsys):

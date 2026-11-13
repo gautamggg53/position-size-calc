@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 
 from . import __version__
@@ -165,10 +166,11 @@ def render(res: SizeResult, account: str, spec: InstrumentSpec) -> str:
         f"({_fmt(res.actual_risk_pct)}% of balance)",
     ]
     if res.target is not None:
-        lines.append(
-            f"Target {res.target:g}: reward {_fmt(res.reward)} {account}, "
-            f"R:R {res.reward_to_risk:.2f}"
-        )
+        rr = f"R:R {res.reward_to_risk:.2f}"
+        net = res.net_reward_to_risk
+        if net is not None and not math.isclose(net, res.reward_to_risk or 0.0, rel_tol=1e-9):
+            rr += f" ({net:.2f} after commission)"
+        lines.append(f"Target {res.target:g}: reward {_fmt(res.reward)} {account}, {rr}")
     if res.status != "ok":
         lines.append(f"Status              {res.status}")
     lines += [f"Note: {n}" for n in res.notes]

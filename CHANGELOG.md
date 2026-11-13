@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- With `--target` and a commission, the output now also shows the R:R after
+  commission (`reward / actual risk`), e.g. `R:R 2.00 (1.93 after commission)`,
+  and JSON has `net_reward_to_risk`. The plain R:R is the price ratio, which
+  overstates the trade's real payoff once round-turn commission is counted.
+
 ### Fixed
 
 - Reject NaN and infinite inputs (balance, risk, prices, commission, rate, prop

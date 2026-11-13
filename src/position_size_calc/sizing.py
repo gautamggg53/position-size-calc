@@ -55,6 +55,7 @@ class SizeResult:
     target: float | None = None
     reward: float | None = None
     reward_to_risk: float | None = None
+    net_reward_to_risk: float | None = None
     status: str = "ok"
     notes: list[str] = field(default_factory=list)
 
@@ -245,12 +246,16 @@ def calculate(
             status = "below_min_lot"
 
     actual = size * loss_per_lot
-    reward = rr = None
+    reward = rr = net_rr = None
     if target is not None:
         conv_t = convert_at(target)
         reward = size * abs(target - entry) * spec.value_per_price_unit * conv_t
         reward -= size * commission_per_lot
         rr = abs(target - entry) / distance
+        # Commission lowers the reward and raises the risk, so the money ratio
+        # is below the price ratio whenever commission is charged.
+        if actual > 0:
+            net_rr = reward / actual
 
     pip_value = None
     if spec.kind == "forex":
@@ -278,6 +283,7 @@ def calculate(
         target=target,
         reward=reward,
         reward_to_risk=rr,
+        net_reward_to_risk=net_rr,
         status=status,
         notes=notes,
     )

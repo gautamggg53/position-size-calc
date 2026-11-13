@@ -131,6 +131,10 @@ limit, notes) for scripts. `psize --list-presets` lists the bundled examples.
    says what the minimum size would risk.
 6. **Reward** (with `--target`) = size × target distance × money per price move ×
    conversion − commission. **R:R** is the price ratio `|target − entry| / |entry − stop|`.
+   With a commission, the money ratio `reward / actual risk` is lower, because
+   commission is taken off the reward and added to the risk. It is shown after
+   the price ratio, e.g. `R:R 2.00 (1.93 after commission)`, and in JSON as
+   `net_reward_to_risk`.
 
 Pips: `pip_size` from the spec, otherwise 0.01 for JPY-quoted forex and 0.0001
 for other forex. Points use `point_size` (default: tick size).
