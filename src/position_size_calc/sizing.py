@@ -119,6 +119,12 @@ def stop_from_distance(entry: float, side: str, *, price_distance: float) -> flo
     _require_finite(entry=entry, stop_distance=price_distance)
     if not price_distance > 0:
         raise SizingError("stop distance must be positive")
+    if side == "long" and not price_distance < entry:
+        raise SizingError(
+            f"a stop distance of {price_distance:g} below entry {entry:g} puts the stop at "
+            f"{entry - price_distance:g}, which is not a positive price; check the distance "
+            "and its unit (pips, points or ticks)"
+        )
     return entry - price_distance if side == "long" else entry + price_distance
 
 
@@ -174,6 +180,9 @@ def calculate(
         raise SizingError("risk_pct must be in (0, 100]")
     if risk_amount is not None and not risk_amount > 0:
         raise SizingError("risk_amount must be positive")
+    if risk_amount is not None and risk_amount > balance:
+        # risk_pct is capped at 100%; a fixed amount above the balance is a typo, not a plan.
+        raise SizingError(f"risk_amount {risk_amount:,.2f} is more than the balance {balance:,.2f}")
     if commission_per_lot < 0:
         raise SizingError("commission_per_lot cannot be negative")
     side = "long" if stop < entry else "short"

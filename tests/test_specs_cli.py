@@ -337,6 +337,38 @@ def test_cli_open_risk_needs_a_prop_limit(capsys):
     assert rc == 0 and "binding: daily_loss" in out and "0.05 lots" in out
 
 
+def test_cli_rejects_impossible_risk_and_stop(capsys):
+    rc, out, err = run(
+        capsys,
+        "ES",
+        "--balance",
+        "1000",
+        "--risk-amount",
+        "5000",
+        "--entry",
+        "5000",
+        "--stop",
+        "4990",
+    )
+    assert rc == 2 and out == "" and "risk_amount 5,000.00 is more than the balance" in err
+    rc, out, err = run(
+        capsys,
+        "--kind",
+        "crypto",
+        "--quote-currency",
+        "USD",
+        "--balance",
+        "1000",
+        "--risk",
+        "1",
+        "--entry",
+        "0.5",
+        "--stop-points",
+        "60",
+    )
+    assert rc == 2 and out == "" and "puts the stop at -0.1" in err and "unit" in err
+
+
 def test_cli_missing_args():
     with pytest.raises(SystemExit):
         main(["EURUSD", "--balance", "1000"])

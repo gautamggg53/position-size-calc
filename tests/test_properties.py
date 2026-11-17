@@ -88,7 +88,7 @@ def test_risk_never_exceeds_budget(spec, balance, risk_pct, entry, frac, short, 
 )
 def test_prop_cap_never_exceeded(spec, balance, risk_amount, entry, frac, daily, dd, open_risk):
     stop = entry * (1 - frac)
-    assume(stop > 0)
+    assume(stop > 0 and risk_amount <= balance)
     prop = PropLimits(daily_loss_left=daily, max_drawdown_left=dd, open_risk=open_risk)
     r = calculate(spec, balance=balance, risk_amount=risk_amount, entry=entry, stop=stop, prop=prop)
     limits = {"risk": risk_amount}

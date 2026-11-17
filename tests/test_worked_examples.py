@@ -278,6 +278,12 @@ def test_stop_from_distance():
         stop_from_distance(1.1, "long", price_distance=0)
     with pytest.raises(SizingError, match="finite"):
         stop_from_distance(1.1, "long", price_distance=float("inf"))
+    # A long stop distance at or past the entry would put the stop at or below zero.
+    with pytest.raises(SizingError, match=r"puts the stop at -59\.5"):
+        stop_from_distance(0.5, "long", price_distance=60)
+    with pytest.raises(SizingError, match="not a positive price"):
+        stop_from_distance(0.5, "long", price_distance=0.5)
+    assert stop_from_distance(0.5, "short", price_distance=60) == pytest.approx(60.5)
 
 
 @pytest.mark.parametrize(
@@ -289,6 +295,7 @@ def test_stop_from_distance():
         ({"risk_amount": 50}, "exactly one"),
         ({"risk_pct": 0}, "risk_pct"),
         ({"risk_pct": None, "risk_amount": -5}, "risk_amount"),
+        ({"risk_pct": None, "risk_amount": 10_000.01}, r"more than the balance 10,000\.00"),
         ({"commission_per_lot": -1}, "commission"),
         ({"target": 1.07}, "wrong side"),
         ({"target": -1}, "positive price"),
@@ -311,6 +318,11 @@ def test_input_validation(kwargs, match):
     base = {"balance": 10_000, "risk_pct": 1, "entry": 1.085, "stop": 1.08}
     with pytest.raises(SizingError, match=match):
         calculate(P["EURUSD"], **{**base, **kwargs})
+
+
+def test_risk_amount_equal_to_balance_is_allowed():
+    r = calculate(P["ES"], balance=1_000, risk_amount=1_000, entry=5000, stop=4990)
+    assert r.size == 2 and r.actual_risk == pytest.approx(1_000)
 
 
 def test_parse_rate_errors():

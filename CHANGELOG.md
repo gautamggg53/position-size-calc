@@ -15,6 +15,15 @@ All notable changes to this project are documented here. The format follows
 
 ### Fixed
 
+- `--risk-amount` larger than `--balance` is now an error, matching the 100%
+  cap on `--risk`. It was accepted, so a typo like `--balance 1000
+  --risk-amount 5000` sized ES to 10 contracts and reported 500% of the
+  balance at risk with exit code 0.
+- A long stop given as a distance (`--stop-pips/--stop-points/--stop-ticks`)
+  that reaches zero or below now says where it puts the stop, e.g. "puts the
+  stop at -59.5 ... check the distance and its unit", instead of the
+  misleading "entry and stop must be positive prices" for a stop you never
+  typed.
 - Reject NaN and infinite inputs (balance, risk, prices, commission, rate, prop
   limits and instrument spec fields) with a clear error. Previously `inf` or
   `nan` crashed the CLI with a traceback, and a NaN daily-loss or drawdown
